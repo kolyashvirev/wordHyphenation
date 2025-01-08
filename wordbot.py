@@ -59,24 +59,25 @@ async def handle_message(update: Update, context: CallbackContext) -> None:
         await update.message.reply_text(f"Результат переноса: {result}")
     except Exception as e:
         await update.message.reply_text(f"Произошла ошибка: {e}")
-    finally:
-        browser.quit()
 
 # Основная функция для запуска бота
 def main() -> None:
 
-  
+    try:
     # Создаем объект Application с токеном бота
-    application = Application.builder().token(BOT_TOKEN).build()
+        application = Application.builder().token(BOT_TOKEN).build()
 
     # Добавляем обработчики команд
-    application.add_handler(CommandHandler("start", start))
+        application.add_handler(CommandHandler("start", start))
 
     # Добавляем обработчик для текстовых сообщений
-    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
+        application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
     # Запуск бота
-    application.run_polling()
+        application.run_polling()
+
+    finally:
+        browser.quit()
 
 if __name__ == '__main__':
     main()
