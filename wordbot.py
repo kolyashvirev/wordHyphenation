@@ -23,7 +23,6 @@ chrome_options.add_argument("--disable-gpu")
 chrome_options.add_argument("--no-sandbox")
 chrome_options.binary_location = "/usr/bin/google-chrome"
 service = Service('/usr/bin/chromedriver')
-browser = webdriver.Chrome(service=service, options=chrome_options)
 
 # Обработчик команды /start
 async def start(update: Update, context: CallbackContext) -> None:
@@ -38,7 +37,6 @@ async def handle_message(update: Update, context: CallbackContext) -> None:
     
 
     try:
-        browser.get("http://perenos-slov.ru")
         
         # Используем WebDriverWait для ожидания элемента
         search_input = WebDriverWait(browser, 10).until(
@@ -64,6 +62,10 @@ async def handle_message(update: Update, context: CallbackContext) -> None:
 
 # Основная функция для запуска бота
 def main() -> None:
+  
+	browser = webdriver.Chrome(service=service, options=chrome_options)
+	browser.get("http://perenos-slov.ru")
+  
     # Создаем объект Application с токеном бота
     application = Application.builder().token(BOT_TOKEN).build()
 
