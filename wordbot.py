@@ -57,7 +57,7 @@ async def handle_message(update: Update, context: CallbackContext) -> None:
         
         # Проверяем, если текст заголовка равен "К сожалению вы попали куда-то не туда)"
         if entry_title.text == "К сожалению вы попали куда-то не туда)":
-            await update.message.reply_text("Слово не найдено.")
+            await update.message.reply_text("Не знаю такого слова")
             return
 
         # После этого продолжаем выполнение, получаем результат переноса
