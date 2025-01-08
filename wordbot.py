@@ -22,6 +22,7 @@ chrome_options.add_argument("--disable-gpu")
 chrome_options.add_argument("--no-sandbox")
 chrome_options.binary_location = "/usr/bin/google-chrome"
 service = Service('/usr/bin/chromedriver')
+browser = webdriver.Chrome(service=service, options=chrome_options)
 
 # Обработчик команды /start
 async def start(update: Update, context: CallbackContext) -> None:
@@ -30,23 +31,30 @@ async def start(update: Update, context: CallbackContext) -> None:
 # Обработчик текстовых сообщений
 async def handle_message(update: Update, context: CallbackContext) -> None:
     word = update.message.text
-    await update.message.reply_text('Обрабатываю ваше слово...')
+    # await update.message.reply_text('Обрабатываю ваше слово...')
 
     # Инициализация браузера
-    browser = webdriver.Chrome(service=service, options=chrome_options)
+    
 
     try:
         browser.get("http://perenos-slov.ru")
-        search_input = browser.find_element(By.CSS_SELECTOR, "input.srch")
+        
+        # Используем WebDriverWait для ожидания элемента
+        search_input = WebDriverWait(browser, 10).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, "input.srch"))
+        )
         search_input.send_keys(word)
 
-        submit_button = browser.find_element(By.CSS_SELECTOR, "input[type='submit']")
+        submit_button = WebDriverWait(browser, 10).until(
+            EC.element_to_be_clickable((By.CSS_SELECTOR, "input[type='submit']"))
+        )
         submit_button.click()
 
-        # Ожидание, пока не появится результат
-        time.sleep(2)  # Лучше использовать WebDriverWait для динамических элементов
+        # Ожидаем появления результата переноса
+        result = WebDriverWait(browser, 10).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, "p.pper"))
+        ).text
 
-        result = browser.find_element(By.CSS_SELECTOR, "p.pper").text
         await update.message.reply_text(f"Результат переноса: {result}")
     except Exception as e:
         await update.message.reply_text(f"Произошла ошибка: {e}")
