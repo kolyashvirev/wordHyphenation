@@ -1,5 +1,5 @@
 from telegram import Update
-from telegram.ext import Updater, CommandHandler, MessageHandler, filters, CallbackContext
+from telegram.ext import Application, CommandHandler, MessageHandler, filters, CallbackContext
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
@@ -23,12 +23,14 @@ chrome_options.add_argument("--no-sandbox")
 chrome_options.binary_location = "/usr/bin/google-chrome"
 service = Service('/usr/bin/chromedriver')
 
-def start(update: Update, context: CallbackContext) -> None:
-    update.message.reply_text('Привет! Отправь мне слово, и я помогу тебе его перенести.')
+# Обработчик команды /start
+async def start(update: Update, context: CallbackContext) -> None:
+    await update.message.reply_text('Привет! Отправь мне слово, и я помогу тебе его перенести.')
 
-def handle_message(update: Update, context: CallbackContext) -> None:
+# Обработчик текстовых сообщений
+async def handle_message(update: Update, context: CallbackContext) -> None:
     word = update.message.text
-    update.message.reply_text('Обрабатываю ваше слово...')
+    await update.message.reply_text('Обрабатываю ваше слово...')
 
     # Инициализация браузера
     browser = webdriver.Chrome(service=service, options=chrome_options)
@@ -45,30 +47,25 @@ def handle_message(update: Update, context: CallbackContext) -> None:
         time.sleep(2)  # Лучше использовать WebDriverWait для динамических элементов
 
         result = browser.find_element(By.CSS_SELECTOR, "p.pper").text
-        update.message.reply_text(f"Результат переноса: {result}")
+        await update.message.reply_text(f"Результат переноса: {result}")
     except Exception as e:
-        update.message.reply_text(f"Произошла ошибка: {e}")
+        await update.message.reply_text(f"Произошла ошибка: {e}")
     finally:
         browser.quit()
 
+# Основная функция для запуска бота
 def main() -> None:
-    # Создаем Updater и передаем токен
-    updater = Updater(BOT_TOKEN)
+    # Создаем объект Application с токеном бота
+    application = Application.builder().token(BOT_TOKEN).build()
 
-    # Получаем диспетчер для регистрации обработчиков
-    dispatcher = updater.dispatcher
+    # Добавляем обработчики команд
+    application.add_handler(CommandHandler("start", start))
 
-    # Обработчик команды /start
-    dispatcher.add_handler(CommandHandler("start", start))
-
-    # Обработчик текстовых сообщений
-    dispatcher.add_handler(MessageHandler(filters.text & ~filters.command, handle_message))
+    # Добавляем обработчик для текстовых сообщений
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
     # Запуск бота
-    updater.start_polling()
-
-    # Работает до тех пор, пока не нажмем Ctrl+C
-    updater.idle()
+    application.run_polling()
 
 if __name__ == '__main__':
     main()
