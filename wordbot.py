@@ -8,7 +8,7 @@ import logging
 import time
 
 # Укажите ваш токен бота
-BOT_TOKEN = "Ваш_токен_бота"
+BOT_TOKEN = "7522774678:AAEdR9IA4by-acqHMOkymI7OYXFIvdR4kdk"
 
 # Настройка логирования
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
