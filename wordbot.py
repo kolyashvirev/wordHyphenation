@@ -36,7 +36,21 @@ async def handle_message(update: Update, context: CallbackContext) -> None:
     # await update.message.reply_text('Обрабатываю ваше слово...')
 
     try:
-        # Проверяем наличие элемента <div class="kroshki">
+        # Ожидаем появления поля для ввода слова
+        search_input = WebDriverWait(browser, 10).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, "input.srch"))
+        )
+        
+        # Вводим слово
+        search_input.send_keys(word)
+
+        # Ожидаем появления кнопки и кликаем по ней
+        submit_button = WebDriverWait(browser, 10).until(
+            EC.element_to_be_clickable((By.CSS_SELECTOR, "input[type='submit']"))
+        )
+        submit_button.click()
+
+        # Теперь ожидаем появления элемента <div class="kroshki">
         try:
             WebDriverWait(browser, 10).until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, "div.kroshki"))
@@ -45,18 +59,7 @@ async def handle_message(update: Update, context: CallbackContext) -> None:
             await update.message.reply_text("Не знаю такого слова.")
             return  # Прерываем выполнение, если элемент не найден
 
-        # Если элемент найден, продолжаем выполнение:
-        search_input = WebDriverWait(browser, 10).until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, "input.srch"))
-        )
-        search_input.send_keys(word)
-
-        submit_button = WebDriverWait(browser, 10).until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, "input[type='submit']"))
-        )
-        submit_button.click()
-
-        # Ожидаем появления результата переноса
+        # После того, как элемент <div class="kroshki"> найден, получаем результат переноса
         result = WebDriverWait(browser, 10).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, "p.pper"))
         ).text
