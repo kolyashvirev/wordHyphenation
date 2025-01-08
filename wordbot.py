@@ -63,8 +63,8 @@ async def handle_message(update: Update, context: CallbackContext) -> None:
 # Основная функция для запуска бота
 def main() -> None:
   
-	browser = webdriver.Chrome(service=service, options=chrome_options)
-	browser.get("http://perenos-slov.ru")
+    browser = webdriver.Chrome(service=service, options=chrome_options)
+    browser.get("http://perenos-slov.ru")
   
     # Создаем объект Application с токеном бота
     application = Application.builder().token(BOT_TOKEN).build()
