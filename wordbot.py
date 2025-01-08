@@ -67,6 +67,13 @@ async def handle_message(update: Update, context: CallbackContext) -> None:
         await update.message.reply_text(result)
     
     except Exception as e:
+      try:
+            WebDriverWait(browser, 10).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, "div.kroshki"))
+            )
+        except Exception:
+            await update.message.reply_text("Не знаю такого слова.")
+            return  # Прерываем выполнение, если элемент не найден
         await update.message.reply_text(f"Произошла ошибка: {e}")
 
 # Основная функция для запуска бота
