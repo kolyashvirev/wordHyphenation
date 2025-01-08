@@ -50,16 +50,17 @@ async def handle_message(update: Update, context: CallbackContext) -> None:
         )
         submit_button.click()
 
-        # Теперь ожидаем появления элемента <div class="kroshki">
-        try:
-            WebDriverWait(browser, 10).until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, "div.kroshki"))
-            )
-        except Exception:
-            await update.message.reply_text("Не знаю такого слова.")
-            return  # Прерываем выполнение, если элемент не найден
+        # Ожидаем, пока загрузится элемент <h1 class="entry-title">
+        entry_title = WebDriverWait(browser, 10).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, "h1.entry-title"))
+        )
+        
+        # Проверяем, если текст заголовка равен "К сожалению вы попали куда-то не туда)"
+        if entry_title.text == "К сожалению вы попали куда-то не туда)":
+            await update.message.reply_text("Слово не найдено.")
+            return
 
-        # После того, как элемент <div class="kroshki"> найден, получаем результат переноса
+        # После этого продолжаем выполнение, получаем результат переноса
         result = WebDriverWait(browser, 10).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, "p.pper"))
         ).text
@@ -67,13 +68,6 @@ async def handle_message(update: Update, context: CallbackContext) -> None:
         await update.message.reply_text(result)
     
     except Exception as e:
-      try:
-            WebDriverWait(browser, 10).until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, "div.kroshki"))
-            )
-        except Exception:
-            await update.message.reply_text("Не знаю такого слова.")
-            return  # Прерываем выполнение, если элемент не найден
         await update.message.reply_text(f"Произошла ошибка: {e}")
 
 # Основная функция для запуска бота
