@@ -36,7 +36,8 @@ async def handle_message(update: Update, context: CallbackContext) -> None:
     # await update.message.reply_text('Обрабатываю ваше слово...')
 
     try:
-         try:
+        # Проверяем наличие элемента <div class="kroshki">
+        try:
             WebDriverWait(browser, 10).until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, "div.kroshki"))
             )
@@ -61,23 +62,23 @@ async def handle_message(update: Update, context: CallbackContext) -> None:
         ).text
 
         await update.message.reply_text(result)
+    
     except Exception as e:
         await update.message.reply_text(f"Произошла ошибка: {e}")
 
 # Основная функция для запуска бота
 def main() -> None:
-
     try:
-    # Создаем объект Application с токеном бота
+        # Создаем объект Application с токеном бота
         application = Application.builder().token(BOT_TOKEN).build()
 
-    # Добавляем обработчики команд
+        # Добавляем обработчики команд
         application.add_handler(CommandHandler("start", start))
 
-    # Добавляем обработчик для текстовых сообщений
+        # Добавляем обработчик для текстовых сообщений
         application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
-    # Запуск бота
+        # Запуск бота
         application.run_polling()
 
     finally:
