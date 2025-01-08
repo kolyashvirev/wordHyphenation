@@ -12,8 +12,15 @@ import logging
 BOT_TOKEN = "7522774678:AAEdR9IA4by-acqHMOkymI7OYXFIvdR4kdk"
 
 # Настройка логирования
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                    level=logging.INFO)
+logdir = f"{os.path.dirname(__file__)}/bot.log"
+print(f"Логирование: {logdir}")
+os.system(f'touch {logdir}')
+logging.basicConfig (
+    filename = logdir,
+    filemode = 'a',
+    format = "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    level = logging.INFO
+)
 logger = logging.getLogger(__name__)
 
 # Настройка Selenium WebDriver
@@ -33,6 +40,7 @@ async def start(update: Update, context: CallbackContext) -> None:
 # Обработчик текстовых сообщений
 async def handle_message(update: Update, context: CallbackContext) -> None:
     word = update.message.text
+    logger.info(f"Пользователь {update.effective_user.username} переносит слово {word}")
     # await update.message.reply_text('Обрабатываю ваше слово...')
 
     try:
